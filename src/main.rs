@@ -1,0 +1,20 @@
+use chessbot_starterkit::bot::{controller::Controller, input::InputListener};
+use chessbot_starterkit::search::Searcher;
+use crossbeam_channel::unbounded;
+use std::thread;
+
+fn main() {
+    // Initialize channels
+    let (input_tx, input_rx) = unbounded();
+    let (cmd_tx, cmd_rx) = unbounded();
+    let (info_tx, info_rx) = unbounded();
+
+    // Spawn input listener thread
+    thread::spawn(|| InputListener::new(input_tx).run());
+
+    // Spawn search thread
+    thread::spawn(|| Searcher::new(cmd_rx, info_tx).run());
+
+    // Run controller on main thread
+    Controller::new(input_rx, cmd_tx, info_rx, "engine.log").run();
+}
