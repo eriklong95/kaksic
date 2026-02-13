@@ -1,4 +1,4 @@
-use crate::{SearchCommand, SearchControl, SearchInfo, AUTHOR, BOT_NAME, SEARCH_TIME_MS};
+use crate::{SearchCommand, SearchControl, SearchInfo, SEARCH_TIME_MS};
 use chrono::Local;
 use crossbeam_channel::{select, Receiver, Sender};
 use shakmaty::{CastlingMode, Chess, Position};
@@ -65,12 +65,16 @@ impl Controller {
             // Uci handshake
             UciMessage::Uci => {
                 self.send(UciMessage::Id {
-                    name: Some(format!("{} {}", BOT_NAME, env!("CARGO_PKG_VERSION"))),
+                    name: Some(format!(
+                        "{} {}",
+                        env!("CARGO_PKG_NAME"),
+                        env!("CARGO_PKG_VERSION")
+                    )),
                     author: None,
                 });
                 self.send(UciMessage::Id {
                     name: None,
-                    author: Some(AUTHOR.into()),
+                    author: Some(env!("CARGO_PKG_AUTHORS").into()),
                 });
                 self.send(UciMessage::UciOk);
             }

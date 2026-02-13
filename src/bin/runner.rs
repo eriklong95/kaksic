@@ -7,7 +7,7 @@ use std::time::Duration;
 
 fn main() {
     // Path to the release binary
-    let exe_name = "skakarlak";
+    let exe_name = env!("CARGO_PKG_NAME");
     let exe_path = format!("./{}", exe_name);
 
     // Pass through any arguments given to runner

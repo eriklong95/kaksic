@@ -2,8 +2,6 @@ pub mod bot;
 pub mod search;
 
 // Parameters
-const BOT_NAME: &str = "ChessBot9000";
-const AUTHOR: &str = "Your Name";
 const SEARCH_TIME_MS: u64 = 2000;
 
 /// Instructions for the search thread
