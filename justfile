@@ -12,7 +12,7 @@ test arg="":
     cargo nextest run -r {{ arg }}
 
 run-raw:
-    cargo r -r --bin skakarlak
+    cargo run --release --bin $(awk '/\[package\]/{flag=1;next}/\[/{flag=0}flag && /^name *=/ {gsub(/"/,""); print $3}' Cargo.toml )
 
 baseline benchname="":
     @if [ -n "{{ benchname }}" ]; then \
