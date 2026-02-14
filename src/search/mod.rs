@@ -32,8 +32,21 @@ impl Searcher {
     }
 
     /// what is the value at the root of the game tree?
-    fn negamax(position: &Chess, depth: u8) -> i32 {
-        0
+    fn negamax(position: Chess, depth: u8) -> i32 {
+        if depth == 0 {
+            return Self::eval(&position);
+        } else {
+            // loop over legal moves
+            let mut max_value = 0;
+            for mv in position.legal_moves() {
+                let result_position = position.clone().play(mv).unwrap();
+                let value = -Self::negamax(result_position, depth - 1);
+                if value > max_value {
+                    max_value = value;
+                }
+            }
+            return max_value;
+        }
     }
 
     fn search(&mut self, position: Chess, control: SearchControl) {
@@ -51,7 +64,7 @@ impl Searcher {
         for mv in position.legal_moves() {
             let position_clone = position.clone();
             let result_position = position_clone.play(mv).unwrap();
-            let value = -Self::negamax(&result_position, 3);
+            let value = -Self::negamax(result_position, 3);
             if value > max_value {
                 max_value = value;
                 best_move = mv;
