@@ -1,14 +1,16 @@
+use std::i32;
+
 use shakmaty::{Chess, Position as _};
 
 use crate::search::Searcher;
 
 /// what is the value at the root of the game tree? returns (value, nodes visited)
 pub fn negamax(position: Chess, depth: u8, eval: fn(&Chess) -> i32) -> (i32, u64) {
-    if depth == 0 {
+    if depth == 0 || position.is_game_over() {
         return (eval(&position), 1);
     } else {
         // loop over legal moves
-        let mut max_value = 0;
+        let mut max_value = i32::MIN;
         let mut total_nodes = 0;
         for mv in position.legal_moves() {
             let result_position = position.clone().play(mv).unwrap();

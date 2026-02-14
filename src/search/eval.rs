@@ -2,7 +2,9 @@ use shakmaty::{ByRole, Chess, Position, Square};
 
 /// Evaluate the "value" of the position for the player who is about to move
 pub fn eval(position: &Chess) -> i32 {
-    eval_material(position) + eval_position(position) + eval_checkmate(position)
+    let score = eval_material(position) + eval_position(position) + eval_checkmate(position);
+
+    return score;
 }
 
 fn eval_checkmate(position: &Chess) -> i32 {

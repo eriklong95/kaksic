@@ -1,6 +1,8 @@
 mod eval;
 mod negamax;
 
+use std::i32;
+
 use crate::search::negamax::negamax;
 use crate::{SearchCommand, SearchControl, SearchInfo};
 use crossbeam_channel::{Receiver, Sender};
@@ -36,7 +38,7 @@ impl Searcher {
         };
 
         let mut bestmove = position.legal_moves()[0].clone();
-        let mut max_score = 0;
+        let mut max_score = i32::MIN;
         let mut total_nodes = 0;
 
         for mv in position.legal_moves() {
