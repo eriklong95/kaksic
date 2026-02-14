@@ -28,29 +28,6 @@ impl Searcher {
         }
     }
 
-    fn log_move(mv: &Move) {
-        match mv {
-            Move::Normal {
-                role,
-                from,
-                capture,
-                to,
-                promotion,
-            } => {
-                println!(
-                    "{}{}-{}{}",
-                    from.coords().0,
-                    from.coords().1,
-                    to.coords().0,
-                    to.coords().1
-                )
-            }
-            Move::EnPassant { from, to } => todo!(),
-            Move::Castle { king, rook } => todo!(),
-            Move::Put { role, to } => todo!(),
-        }
-    }
-
     fn search(&mut self, position: Chess, control: SearchControl) {
         // Determine search constraints
         let (_max_depth, _time_limit) = match control {
@@ -63,8 +40,6 @@ impl Searcher {
         let mut total_nodes = 0;
 
         for mv in position.legal_moves() {
-            Self::log_move(&mv);
-
             let position_clone = position.clone();
             let result_position = position_clone.play(mv).unwrap();
             let (value, nodes) =

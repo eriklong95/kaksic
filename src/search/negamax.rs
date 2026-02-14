@@ -11,7 +11,6 @@ pub fn negamax(position: Chess, depth: u8, eval: fn(&Chess) -> i32) -> (i32, u64
         let mut max_value = 0;
         let mut total_nodes = 0;
         for mv in position.legal_moves() {
-            Searcher::log_move(&mv);
             let result_position = position.clone().play(mv).unwrap();
             let (value, nodes) = negamax(result_position, depth - 1, eval);
             let negated_value = -value;
