@@ -3,7 +3,7 @@ mod negamax;
 
 use std::i32;
 
-use crate::search::negamax::negamax;
+use crate::search::negamax::{negamax, Report};
 use crate::{SearchCommand, SearchControl, SearchInfo};
 use crossbeam_channel::{Receiver, Sender};
 use shakmaty::{Chess, Move, Position};
@@ -37,30 +37,27 @@ impl Searcher {
             SearchControl::TimeLimit(time_limit) => (u8::MAX, time_limit),
         };
 
-        let mut bestmove = position.legal_moves()[0].clone();
-        let mut max_score = i32::MIN;
-        let mut total_nodes = 0;
+        let mut report = Report {
+            nodes_visited: 0,
+            best_move: None,
+        };
 
-        for mv in position.legal_moves() {
-            let position_clone = position.clone();
-            let result_position = position_clone.play(mv).unwrap();
-            let (value, nodes) =
-                negamax(result_position, _max_depth - 1, crate::search::eval::eval);
-            let negated_value = -value;
-            if negated_value > max_score {
-                max_score = negated_value;
-                bestmove = mv;
-            }
-            total_nodes += nodes;
-        }
+        let score = negamax(position, _max_depth, crate::search::eval::eval, &mut report);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
 
         // It is necessary to send info at least once to En Croissant (the user interface) before outputting best move.
-        self.send_info(_max_depth, vec![bestmove], max_score, total_nodes);
+        self.send_info(
+            _max_depth,
+            vec![report.best_move.unwrap()],
+            score,
+            report.nodes_visited,
+        );
 
         // Output best move
-        self.info_tx.send(SearchInfo::BestMove(bestmove)).unwrap();
+        self.info_tx
+            .send(SearchInfo::BestMove(report.best_move.unwrap()))
+            .unwrap();
     }
 
     fn send_info(&self, depth: u8, pv: Vec<Move>, score: i32, nodes: u64) {

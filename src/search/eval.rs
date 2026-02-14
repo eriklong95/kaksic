@@ -2,24 +2,36 @@ use shakmaty::{ByRole, Chess, Position, Square};
 
 /// Evaluate the "value" of the position for the player who is about to move
 pub fn eval(position: &Chess) -> i32 {
-    let score = eval_material(position) + eval_position(position) + eval_checkmate(position);
+    let score = eval_material(position) + eval_position(position) + eval_checkstuff(position);
 
     return score;
 }
 
-fn eval_checkmate(position: &Chess) -> i32 {
+fn eval_checkstuff(position: &Chess) -> i32 {
     if position.is_checkmate() {
         return i32::MIN + 1;
+    } else if position.is_check() {
+        return -1000;
     }
     return 0;
 }
 
 fn eval_position(position: &Chess) -> i32 {
     let mut to_move_pieces_in_center = 0;
+    let mut to_move_pieces_around_center = 0;
 
     let mut other_pieces_in_center = 0;
+    let mut other_pieces_around_center = 0;
 
     for (sq, pc) in position.board() {
+        if is_around_center(sq) {
+            if pc.color == position.turn() {
+                to_move_pieces_around_center += 1;
+            } else {
+                other_pieces_around_center += 1;
+            }
+        }
+
         if is_center(sq) {
             if pc.color == position.turn() {
                 to_move_pieces_in_center += 1;
@@ -29,14 +41,23 @@ fn eval_position(position: &Chess) -> i32 {
         }
     }
 
-    return (to_move_pieces_in_center - other_pieces_in_center) * 100;
+    return (to_move_pieces_in_center - other_pieces_in_center) * 200
+        + (to_move_pieces_around_center - other_pieces_around_center) * 100;
 }
 
-fn is_center(sq: Square) -> bool {
+fn is_around_center(sq: Square) -> bool {
     sq.file().ge(&shakmaty::File::C)
         && sq.file().le(&shakmaty::File::F)
         && sq.rank().ge(&shakmaty::Rank::Third)
         && sq.rank().le(&shakmaty::Rank::Sixth)
+        && !is_center(sq)
+}
+
+fn is_center(sq: Square) -> bool {
+    sq.file().ge(&shakmaty::File::D)
+        && sq.file().le(&shakmaty::File::E)
+        && sq.rank().ge(&shakmaty::Rank::Fourth)
+        && sq.rank().le(&shakmaty::Rank::Fifth)
 }
 
 fn eval_material(position: &Chess) -> i32 {
