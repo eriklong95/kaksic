@@ -1,5 +1,7 @@
-use std::collections::HashMap;
+mod eval;
+mod negamax;
 
+use crate::search::negamax::negamax;
 use crate::{SearchCommand, SearchControl, SearchInfo};
 use crossbeam_channel::{Receiver, Sender};
 use shakmaty::{Chess, Move, Position};
@@ -26,29 +28,6 @@ impl Searcher {
         }
     }
 
-    /// Evaluate the "value" of the position for the player who is about to move
-    fn eval(position: &Chess) -> i32 {
-        1
-    }
-
-    /// what is the value at the root of the game tree?
-    fn negamax(position: Chess, depth: u8) -> i32 {
-        if depth == 0 {
-            return Self::eval(&position);
-        } else {
-            // loop over legal moves
-            let mut max_value = 0;
-            for mv in position.legal_moves() {
-                let result_position = position.clone().play(mv).unwrap();
-                let value = -Self::negamax(result_position, depth - 1);
-                if value > max_value {
-                    max_value = value;
-                }
-            }
-            return max_value;
-        }
-    }
-
     fn search(&mut self, position: Chess, control: SearchControl) {
         // Determine search constraints
         let (_max_depth, _time_limit) = match control {
@@ -64,7 +43,7 @@ impl Searcher {
         for mv in position.legal_moves() {
             let position_clone = position.clone();
             let result_position = position_clone.play(mv).unwrap();
-            let value = -Self::negamax(result_position, 3);
+            let value = -negamax(result_position, 3, crate::search::eval::eval);
             if value > max_value {
                 max_value = value;
                 best_move = mv;
