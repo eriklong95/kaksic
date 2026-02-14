@@ -1,6 +1,6 @@
-use chessbot_starterkit::bot::{controller::Controller, input::InputListener};
-use chessbot_starterkit::search::Searcher;
 use crossbeam_channel::unbounded;
+use kaksic::bot::{controller::Controller, input::InputListener};
+use kaksic::search::Searcher;
 use std::thread;
 
 fn main() {

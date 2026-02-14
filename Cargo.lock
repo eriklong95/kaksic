@@ -114,18 +114,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "chessbot-starterkit"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "criterion",
- "crossbeam-channel",
- "rand",
- "shakmaty",
- "shakmaty-uci",
-]
-
-[[package]]
 name = "chrono"
 version = "0.4.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -415,6 +403,18 @@ checksum = "b011eec8cc36da2aab2d5cff675ec18454fad408585853910a202391cf9f8e65"
 dependencies = [
  "once_cell",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "kaksic"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "criterion",
+ "crossbeam-channel",
+ "rand",
+ "shakmaty",
+ "shakmaty-uci",
 ]
 
 [[package]]

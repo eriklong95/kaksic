@@ -1,7 +1,7 @@
-use chessbot_starterkit::search::Searcher;
-use chessbot_starterkit::{SearchCommand, SearchControl, SearchInfo};
 use criterion::{criterion_group, criterion_main, Criterion};
 use crossbeam_channel::unbounded;
+use kaksic::search::Searcher;
+use kaksic::{SearchCommand, SearchControl, SearchInfo};
 use shakmaty::fen::Fen;
 use shakmaty::{CastlingMode, Chess};
 use std::hint::black_box;
