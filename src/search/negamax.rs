@@ -4,7 +4,6 @@ use shakmaty::{Chess, Move, Position as _};
 
 pub struct Report {
     pub nodes_visited: u64,
-    pub best_move: Option<Move>,
 }
 
 /// what is the value at the root of the game tree? returns (value, nodes visited)
@@ -22,7 +21,6 @@ pub fn negamax(position: Chess, depth: u8, eval: fn(&Chess) -> i32, report: &mut
 
             if value > max_value {
                 max_value = value;
-                report.best_move = Some(mv);
             }
         }
         return max_value;
