@@ -28,6 +28,29 @@ impl Searcher {
         }
     }
 
+    fn log_move(mv: &Move) {
+        match mv {
+            Move::Normal {
+                role,
+                from,
+                capture,
+                to,
+                promotion,
+            } => {
+                println!(
+                    "{}{}-{}{}",
+                    from.coords().0,
+                    from.coords().1,
+                    to.coords().0,
+                    to.coords().1
+                )
+            }
+            Move::EnPassant { from, to } => todo!(),
+            Move::Castle { king, rook } => todo!(),
+            Move::Put { role, to } => todo!(),
+        }
+    }
+
     fn search(&mut self, position: Chess, control: SearchControl) {
         // Determine search constraints
         let (_max_depth, _time_limit) = match control {
@@ -35,28 +58,32 @@ impl Searcher {
             SearchControl::TimeLimit(time_limit) => (u8::MAX, time_limit),
         };
 
-        // which of the legal moves should we take?
-
-        let mut best_move = position.legal_moves()[0].clone();
-        let mut max_value = 0;
+        let mut bestmove = position.legal_moves()[0].clone();
+        let mut max_score = 0;
+        let mut total_nodes = 0;
 
         for mv in position.legal_moves() {
+            Self::log_move(&mv);
+
             let position_clone = position.clone();
             let result_position = position_clone.play(mv).unwrap();
-            let value = -negamax(result_position, 3, crate::search::eval::eval);
-            if value > max_value {
-                max_value = value;
-                best_move = mv;
+            let (value, nodes) =
+                negamax(result_position, _max_depth - 1, crate::search::eval::eval);
+            let negated_value = -value;
+            if negated_value > max_score {
+                max_score = negated_value;
+                bestmove = mv;
             }
+            total_nodes += nodes;
         }
 
         std::thread::sleep(std::time::Duration::from_millis(500));
 
         // It is necessary to send info at least once to En Croissant (the user interface) before outputting best move.
-        self.send_info(0, vec![best_move], max_value, 1234);
+        self.send_info(_max_depth, vec![bestmove], max_score, total_nodes);
 
         // Output best move
-        self.info_tx.send(SearchInfo::BestMove(best_move)).unwrap();
+        self.info_tx.send(SearchInfo::BestMove(bestmove)).unwrap();
     }
 
     fn send_info(&self, depth: u8, pv: Vec<Move>, score: i32, nodes: u64) {
